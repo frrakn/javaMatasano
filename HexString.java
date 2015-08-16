@@ -16,7 +16,7 @@ public class HexString{
 	public HexString(String string){
 		str = string;
 	}
-	public byte[] toBytes() throws InvalidHexStringException{
+	public byte[] toBytes(){
 		byte[] bytes;
 		int val;
 		char[] chars = this.str.toCharArray();
@@ -25,17 +25,14 @@ public class HexString{
 			if(chars[i] - '0' >= 0 && chars[i] - '0' <= 9){
 				val = chars[i] - '0';
 			}
-			else if(Character.toUpperCase(chars[i]) - 'A' >= 0 && Character.toUpperCase(chars[i]) - 'A' <= 5){
-				val = Character.toUpperCase(chars[i]) - 'A' + 10;
-			}
 			else{
-				throw new InvalidHexStringException("String contains non-hex digits " + chars[i]);
+				val = Character.toUpperCase(chars[i]) - 'A' + 10;
 			}
 			bytes[i / 2] += val << ((1 - (i % 2)) * 4); 
 		}
 		return bytes;
 	}
-	public String convertToBase64() throws InvalidHexStringException{
+	public String convertToBase64(){
 		Base64.Encoder base64Encoder = Base64.getEncoder();
 		return base64Encoder.encodeToString(toBytes());
 	}
@@ -58,22 +55,17 @@ public class HexString{
 		}
 		return output;
 	}
-	public HexString fixedXOR(HexString hstring) throws InvalidHexStringException{
+	public HexString fixedXOR(HexString hstring){
 		byte[] thisHexString;
 		byte[] otherHexString;
 		byte[] newHexString;
-		if(str.length() != hstring.length()){
-			throw new InvalidHexStringException("Hex strings must match in length");
+		thisHexString = this.toBytes();
+		otherHexString = hstring.toBytes();
+		newHexString = new byte[thisHexString.length];
+		for(int i = 0; i < thisHexString.length; i++){
+			newHexString[i] = (byte) (thisHexString[i] ^ otherHexString[i]);
 		}
-		else{
-			thisHexString = this.toBytes();
-			otherHexString = hstring.toBytes();
-			newHexString = new byte[thisHexString.length];
-			for(int i = 0; i < thisHexString.length; i++){
-				newHexString[i] = (byte) (thisHexString[i] ^ otherHexString[i]);
-			}
-			return new HexString(newHexString);
-		}
+		return new HexString(newHexString);
 	}
 	public String toString(){
 		return str;
